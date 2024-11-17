@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.checker.Checker;
 import org.poo.checker.CheckerConstants;
 import org.poo.fileio.Input;
-
+import org.poo.game.Games;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -86,7 +86,7 @@ public final class Main {
          * output.add(objectNode);
          *
          */
-
+        Games game = new Games(inputData, output);
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
     }

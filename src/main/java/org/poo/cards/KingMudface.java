@@ -15,8 +15,4 @@ public final class KingMudface extends Hero {
     public KingMudface(final CardInput card) {
         super(card);
     }
-
-    public KingMudface(final KingMudface card) {
-        super(card);
-    }
 }

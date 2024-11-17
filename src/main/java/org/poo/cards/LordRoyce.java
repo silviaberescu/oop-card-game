@@ -15,8 +15,4 @@ public final class LordRoyce extends Hero {
     public LordRoyce(final CardInput card) {
         super(card);
     }
-
-    public LordRoyce(final LordRoyce card) {
-        super(card);
-    }
 }

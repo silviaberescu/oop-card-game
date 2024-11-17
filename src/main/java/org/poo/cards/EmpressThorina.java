@@ -21,8 +21,4 @@ public final class EmpressThorina extends Hero {
     public EmpressThorina(final CardInput card) {
         super(card);
     }
-
-    public EmpressThorina(final EmpressThorina card) {
-        super(card);
-    }
 }

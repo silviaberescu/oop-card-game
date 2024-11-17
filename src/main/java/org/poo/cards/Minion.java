@@ -63,6 +63,9 @@ public class Minion extends Card {
         this.front = card.getFront();
         this.tank = isTank(card.getName());
     }
+    /**
+     * @param minion the minion whose ability is to be used
+    */
     public void useAbility(final Minion minion) {
         System.out.println("Minion does not have a special ability");
     }

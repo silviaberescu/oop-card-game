@@ -1,11 +1,12 @@
 package org.poo.game;
 
+
 import org.poo.cards.*;
 import org.poo.fileio.CardInput;
 
 import java.util.ArrayList;
 
-public class Player {
+public final class Player {
     private Decks decks;
     private Hero hero;
     private int front;
@@ -13,9 +14,10 @@ public class Player {
     private int mana;
     private ArrayList<Minion> cardsInHand;
     private ArrayList<Minion> currentDeck;
-    boolean turn;
+    private boolean turn;
 
-    public Player(Decks decks, ArrayList<Minion> deck, CardInput hero, int indexFrontRow, int indexBackRow) {
+    public Player(final Decks decks, final ArrayList<Minion> deck, final CardInput hero,
+                  final int indexFrontRow, final int indexBackRow) {
         this.currentDeck = deck;
         this.decks = decks;
         switch (hero.getName()) {
@@ -32,7 +34,10 @@ public class Player {
         this.turn = false;
     }
 
-    public void defrost(ArrayList<Minion>[] table) {
+    /**
+     * @param table the game table
+     */
+    public void defrost(final ArrayList<Minion>[] table) {
         for (Minion minion : table[this.front]) {
             if (minion.getFrozen()) {
                 minion.setFrozen(false);
@@ -46,7 +51,10 @@ public class Player {
         }
     }
 
-    public void refreshAttackers(ArrayList<Minion>[] table) {
+    /**
+     * @param table the game table
+     */
+    public void refreshAttackers(final ArrayList<Minion>[] table) {
         for (Minion minion : table[this.front]) {
             if (minion.getHasAttacked()) {
                 minion.setHasAttacked(false);
@@ -64,7 +72,7 @@ public class Player {
         return mana;
     }
 
-    public void setMana(int mana) {
+    public void setMana(final int mana) {
         this.mana = mana;
     }
 
@@ -76,28 +84,19 @@ public class Player {
         return front;
     }
 
-
     public ArrayList<Minion> getCurrentDeck() {
         return currentDeck;
-    }
-
-    public void setCurrentDeck(ArrayList<Minion> currentDeck) {
-        this.currentDeck = currentDeck;
     }
 
     public ArrayList<Minion> getCardsInHand() {
         return cardsInHand;
     }
 
-    public void setCardsInHand(ArrayList<Minion> cardsInHand) {
-        this.cardsInHand = cardsInHand;
-    }
-
     public Hero getHero() {
         return hero;
     }
 
-    public void setHero(Hero hero) {
+    public void setHero(final Hero hero) {
         this.hero = hero;
     }
 
@@ -105,7 +104,7 @@ public class Player {
         return decks;
     }
 
-    public void setDecks(Decks decks) {
+    public void setDecks(final Decks decks) {
         this.decks = decks;
     }
 
@@ -113,7 +112,11 @@ public class Player {
         return turn;
     }
 
-    public void setTurn(boolean turn) {
+    public void setTurn(final boolean turn) {
         this.turn = turn;
+    }
+
+    public boolean isTurn() {
+        return turn;
     }
 }

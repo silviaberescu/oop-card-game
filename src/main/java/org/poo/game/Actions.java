@@ -1,16 +1,29 @@
 package org.poo.game;
 
-import org.poo.cards.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.poo.cards.Hero;
+import org.poo.cards.Minion;
 import org.poo.fileio.Coordinates;
 
 import java.util.ArrayList;
 
-public class Actions {
+public final class Actions {
+    static final int MAXIDXLINES = 3;
+    static final int MAXROWS = 5;
 
-    public static void getPlayerDeck(int playerIdx, Player player, ArrayNode output) {
+    private Actions() {
+    }
+
+    /**
+     * @param playerIdx the index of the player whose deck is being retrieved
+     * @param player the object representing the player
+     * @param output the ArrayNode to which the JSON object will be added
+     */
+
+    public static void getPlayerDeck(final int playerIdx, final Player player,
+                                     final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "getPlayerDeck");
         node.put("playerIdx", playerIdx);
@@ -25,8 +38,13 @@ public class Actions {
         node.set("output", deckArray);
         output.add(node);
     }
-
-    public static void getPlayerHero(int playerIdx, Player player, ArrayNode output){
+    /**
+     * @param playerIdx the index of the player whose hero is being retrieved
+     * @param player the object representing the player
+     * @param output the ArrayNode to which the hero details are added
+     */
+    public static void getPlayerHero(final int playerIdx, final Player player,
+                                     final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "getPlayerHero");
         node.put("playerIdx", playerIdx);
@@ -39,8 +57,8 @@ public class Actions {
         heroNode.put("name", hero.getName());
         heroNode.put("health", hero.getHealth());
 
-
         ArrayNode colorsArray = JsonNodeFactory.instance.arrayNode();
+
         for (String color : hero.getColors()) {
             colorsArray.add(color);
         }
@@ -51,21 +69,30 @@ public class Actions {
         output.add(node);
     }
 
-    public static void getPlayerTurn(Player player, ArrayNode output) {
+    /**
+     * @param player the object representing the player
+     * @param output the ArrayNode to which player turn is added
+     */
+    public static void getPlayerTurn(final Player player, final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "getPlayerTurn");
         int idx = 2;
-        if(player.getFront() == 2)
+        if (player.getFront() == 2) {
             idx = 1;
-        if(player.getTurn()){
+        }
+        if (player.getTurn()) {
             node.put("output", idx);
         } else {
-            node.put("output", (3 - idx));
+            node.put("output", (MAXIDXLINES - idx));
         }
         output.add(node);
     }
-
-    public static void getPlayerMana(int playerIdx, Player player,
+    /**
+     * @param playerIdx the index of the player whose mana is being retrieved
+     * @param player the object representing the player
+     * @param output the ArrayNode to which the mana is added
+     */
+    public static void getPlayerMana(final int playerIdx, final Player player,
                                      final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "getPlayerMana");
@@ -74,7 +101,13 @@ public class Actions {
         output.add(node);
     }
 
-    public static void getCardsInHand(int playerIdx, Player player, ArrayNode output) {
+    /**
+     * @param playerIdx the index of the player whose cardsInHand are being retrieved
+     * @param player the object representing the player
+     * @param output the ArrayNode to which the cardsInHand are added
+     */
+    public static void getCardsInHand(final int playerIdx, final Player player,
+                                      final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "getCardsInHand");
         node.put("playerIdx", playerIdx);
@@ -90,14 +123,20 @@ public class Actions {
         output.add(node);
     }
 
-    public static void getCardAtPosition(int x, final int y, ArrayList<Minion>[] table,
-                                         ArrayNode output) {
+    /**
+     * @param x the row index on the table
+     * @param y the column index on the table
+     * @param table the array representing the table where cards are placed
+     * @param output the ArrayNode to which the card details or an error message is added
+     */
+    public static void getCardAtPosition(final int x, final int y, final ArrayList<Minion>[] table,
+                                         final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "getCardAtPosition");
         node.put("x", x);
         node.put("y", y);
 
-        if (x >= 0 && x <= 3 && y > table[x].size() - 1) {
+        if (x >= 0 && x <= MAXIDXLINES && y > table[x].size() - 1) {
             node.put("output", "No card available at that position.");
         } else {
             ObjectNode minionNode = createMinionJNode(table[x].get(y));
@@ -106,14 +145,20 @@ public class Actions {
         output.add(node);
     }
 
-    public static void getFrozenCardsOnTable(ArrayList<Minion>[] table, ArrayNode output) {
+
+    /**
+     * @param table the array representing the table where cards are placed
+     * @param output the ArrayNode to which the frozen card details are added
+     */
+    public static void getFrozenCardsOnTable(final ArrayList<Minion>[] table,
+                                             final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "getFrozenCardsOnTable");
 
         ArrayNode frozenCards = JsonNodeFactory.instance.arrayNode();
 
         for (int i = 0; i < table.length; i++) {
-            if (table[i] != null){
+            if (table[i] != null) {
                 for (Minion minion : table[i]) {
                     if (minion.getFrozen()) {
                         ObjectNode minionNode = createMinionJNode(minion);
@@ -126,43 +171,58 @@ public class Actions {
         output.add(node);
     }
 
-    public static void placeCard(int handIdx, Player player, ArrayList<Minion>[] table, ArrayNode output) {
+
+    /**
+     * @param handIdx the index of the card in the player's hand to be placed on the table
+     * @param player the player placing the card
+     * @param table the array representing the table
+     * @param output the ArrayNode to which errors are added
+     */
+    public static void placeCard(final int handIdx, final Player player,
+                                 final ArrayList<Minion>[] table, final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "placeCard");
 
-        if (player.getCardsInHand().size() > handIdx && player.getCardsInHand().get(handIdx).getMana() > player.getMana()) {
+        if (player.getCardsInHand().size() > handIdx
+                && player.getCardsInHand().get(handIdx).getMana() > player.getMana()) {
             node.put("error", "Not enough mana to place card on table.");
             node.put("handIdx", handIdx);
             output.addPOJO(node);
         } else {
             if (player.getFront() == 2) {
-                int row = player.getCardsInHand().get(handIdx).getFront() ? 2 : 3;
-                if (table[row].size() == 5) {
+                int row = player.getCardsInHand().get(handIdx).getFront() ? 2 : MAXIDXLINES;
+                if (table[row].size() == MAXROWS) {
                     node.put("error", "Cannot place card on table since row is full.");
                     node.put("handIdx", handIdx);
                     output.addPOJO(node);
                 } else {
                     table[row].add(player.getCardsInHand().get(handIdx));
-                    player.setMana(player.getMana() - player.getCardsInHand().get(handIdx).getMana());
+                    player.setMana(player.getMana() - player.getCardsInHand().
+                            get(handIdx).getMana());
                     player.getCardsInHand().remove(handIdx);
                 }
             } else { //player front == 1
-                if(player.getCardsInHand().size() > handIdx){
+                if (player.getCardsInHand().size() > handIdx) {
                     int row = player.getCardsInHand().get(handIdx).getFront() ? 1 : 0;
-                    if (table[row].size() == 5) {
+                    if (table[row].size() == MAXROWS) {
                         node.put("error", "Cannot place card on table since row is full.");
                         node.put("handIdx", handIdx);
                         output.addPOJO(node);
                     } else {
                         table[row].add(player.getCardsInHand().get(handIdx));
-                        player.setMana(player.getMana() - player.getCardsInHand().get(handIdx).getMana());
+                        player.setMana(player.getMana() - player.getCardsInHand().
+                                get(handIdx).getMana());
                         player.getCardsInHand().remove(handIdx);
                     }
                 }
             }
         }
     }
-    public static void getCardsOnTable(ArrayList<Minion>[] table, ArrayNode output) {
+    /**
+     * @param table the array representing the game table
+     * @param output the ArrayNode to which the resulting cards on the table are added
+     */
+    public static void getCardsOnTable(final ArrayList<Minion>[] table, final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "getCardsOnTable");
 
@@ -181,7 +241,11 @@ public class Actions {
         node.set("output", cardsOnTable);
         output.add(node);
     }
-    private static ObjectNode createMinionJNode(Minion minion) {
+
+    /**
+     * @param minion the object to be converted into a JSON node
+     */
+    private static ObjectNode createMinionJNode(final Minion minion) {
         ObjectNode minionNode = JsonNodeFactory.instance.objectNode();
         minionNode.put("mana", minion.getMana());
         minionNode.put("attackDamage", minion.getAttackDamage());
@@ -196,25 +260,35 @@ public class Actions {
         return minionNode;
     }
 
-    public static void cardUsesAttack(Coordinates cardAttacker, Coordinates cardAttacked,
-                                      Player attacker, Player attacked, ArrayList<Minion>[] table,
-                                      ArrayNode output) {
+
+    /**
+     * @param cardAttacker the coordinates of the attacking card
+     * @param cardAttacked the coordinates of the attacked card
+     * @param attacker the player that attacks
+     * @param attacked player being attacked
+     * @param table the game table
+     * @param output an ArrayNode to store the result of the attack
+     */
+    public static void cardUsesAttack(final Coordinates cardAttacker, final Coordinates
+            cardAttacked, final Player attacker, final Player attacked, final
+            ArrayList<Minion>[] table, final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "cardUsesAttack");
         node.putPOJO("cardAttacker", cardAttacker);
         node.putPOJO("cardAttacked", cardAttacked);
 
         boolean existsTank = false;
-        for(Minion minion : table[attacked.getFront()]){
+        for (Minion minion : table[attacked.getFront()]) {
             if (minion.isTank()) {
                 existsTank = true;
                 break;
             }
         }
-        if(cardAttacked != null && cardAttacker != null && cardAttacked.getX() >= 0 && cardAttacked.getX()
-                < table.length && cardAttacked.getY() >= 0 && cardAttacked.getY()
-                < table[cardAttacked.getX()].size()){
-            if (cardAttacked.getX() == attacker.getFront() || cardAttacked.getX() == attacker.getBack()) {
+        if (cardAttacked != null && cardAttacker != null && cardAttacked.getX() >= 0
+                && cardAttacked.getX() < table.length && cardAttacked.getY() >= 0
+                && cardAttacked.getY() < table[cardAttacked.getX()].size()) {
+            if (cardAttacked.getX() == attacker.getFront() || cardAttacked.getX()
+                    == attacker.getBack()) {
                 node.put("error", "Attacked card does not belong to the enemy.");
                 output.addPOJO(node);
             } else if (table[cardAttacker.getX()].get(cardAttacker.getY()).getHasAttacked()) {
@@ -223,7 +297,8 @@ public class Actions {
             } else if (table[cardAttacker.getX()].get(cardAttacker.getY()).getFrozen()) {
                 node.put("error", "Attacker card is frozen.");
                 output.addPOJO(node);
-            } else if (existsTank && !table[cardAttacked.getX()].get(cardAttacked.getY()).isTank()) {
+            } else if (existsTank && !table[cardAttacked.getX()].
+                    get(cardAttacked.getY()).isTank()) {
                 node.put("error", "Attacked card is not of type 'Tank'.");
                 output.addPOJO(node);
             } else {
@@ -238,32 +313,33 @@ public class Actions {
         }
     }
 
-    public static void cardUsesAbility(Coordinates cardAttacker, Coordinates cardAttacked,
-                                       Player attacker, Player attacked,
-                                       ArrayList<Minion>[] table, ArrayNode output) {
+    /**
+     * @param cardAttacker the coordinates of the attacking card
+     * @param cardAttacked the coordinates of the attacked card
+     * @param attacker the player that attacks
+     * @param attacked player being attacked
+     * @param table the game table
+     * @param output an ArrayNode to store the result of the attack
+     */
+    public static void cardUsesAbility(final Coordinates cardAttacker, final Coordinates
+            cardAttacked, final Player attacker, final Player attacked, final
+            ArrayList<Minion>[] table, final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "cardUsesAbility");
         node.putPOJO("cardAttacker", cardAttacker);
         node.putPOJO("cardAttacked", cardAttacked);
 
-//        if (table[cardAttacker.getX()].get(cardAttacker.getY()).getFrozen()) {
-//            node.put("error", "Attacker card is frozen.");
-//            output.addPOJO(node);
-//            return;
-//        }
-//        if (table[cardAttacker.getX()].get(cardAttacker.getY()).getHasAttacked()) {
-//            node.put("error", "Attacker card has already attacked this turn.");
-//            output.addPOJO(node);
-//            return;
-//        }
-        if (table[cardAttacker.getX()].get(cardAttacker.getY()).getName().compareTo("Disciple") == 0) {
-            if (cardAttacked.getX() != attacker.getFront() && cardAttacked.getX() != attacker.getBack()) {
+        if (table[cardAttacker.getX()].get(cardAttacker.getY()).getName().
+                compareTo("Disciple") == 0) {
+            if (cardAttacked.getX() != attacker.getFront() && cardAttacked.getX()
+                    != attacker.getBack()) {
                 node.put("error", "Attacked card does not belong to the current player.");
                 output.addPOJO(node);
                 return;
             }
         } else {
-            if (cardAttacked.getX() == attacker.getFront() || cardAttacked.getX() == attacker.getBack()) {
+            if (cardAttacked.getX() == attacker.getFront() || cardAttacked.getX()
+                    == attacker.getBack()) {
                 node.put("error", "Attacked card does not belong to the enemy.");
                 output.addPOJO(node);
                 return;
@@ -283,7 +359,7 @@ public class Actions {
         if (table[cardAttacker.getX()].get(cardAttacker.getY()).getName().compareTo("Disciple")
                 != 0) {
             boolean existsTank = false;
-            for(Minion minion : table[attacked.getFront()]){
+            for (Minion minion : table[attacked.getFront()]) {
                 if (minion.isTank()) {
                     existsTank = true;
                     break;
@@ -296,31 +372,46 @@ public class Actions {
                 return;
             }
         }
-        if (table[cardAttacker.getX()].get(cardAttacker.getY()).getName().compareTo("The Ripper") == 0) {
-            ((TheRipper)table[cardAttacker.getX()].get(cardAttacker.getY())).useAbility(table[cardAttacked.getX()].get(cardAttacked.getY()));
-        } else if (table[cardAttacker.getX()].get(cardAttacker.getY()).getName().compareTo("Miraj") == 0) {
-            table[cardAttacker.getX()].get(cardAttacker.getY()).useAbility(table[cardAttacked.getX()].get(cardAttacked.getY()));
-        } else if (table[cardAttacker.getX()].get(cardAttacker.getY()).getName().compareTo("The Cursed One") == 0) {
-            (table[cardAttacker.getX()].get(cardAttacker.getY())).useAbility(table[cardAttacked.getX()].get(cardAttacked.getY()));
+        if (table[cardAttacker.getX()].get(cardAttacker.getY()).getName().
+                compareTo("The Ripper") == 0) {
+            table[cardAttacker.getX()].get(cardAttacker.getY()).
+                    useAbility(table[cardAttacked.getX()].get(cardAttacked.getY()));
+        } else if (table[cardAttacker.getX()].get(cardAttacker.getY()).getName().
+                compareTo("Miraj") == 0) {
+            table[cardAttacker.getX()].get(cardAttacker.getY()).
+                    useAbility(table[cardAttacked.getX()].get(cardAttacked.getY()));
+        } else if (table[cardAttacker.getX()].get(cardAttacker.getY()).getName().
+                compareTo("The Cursed One") == 0) {
+            (table[cardAttacker.getX()].get(cardAttacker.getY())).
+                    useAbility(table[cardAttacked.getX()].get(cardAttacked.getY()));
             if (table[cardAttacked.getX()].get(cardAttacked.getY()).getHealth() == 0) {
                 table[cardAttacked.getX()].remove(cardAttacked.getY());
             }
         } else {
-            table[cardAttacker.getX()].get(cardAttacker.getY()).useAbility(table[cardAttacked.getX()].get(cardAttacked.getY()));
+            table[cardAttacker.getX()].get(cardAttacker.getY()).
+                    useAbility(table[cardAttacked.getX()].get(cardAttacked.getY()));
         }
         table[cardAttacker.getX()].get(cardAttacker.getY()).setHasAttacked(true);
     }
-    public static int useAttackHero(Coordinates cardAttacker, Player attacker, Player attacked,
-                                    ArrayList<Minion>[] table, ArrayNode output) {
+
+    /**
+     * @param cardAttacker the coordinates of the attacking card
+     * @param attacker the player attacker
+     * @param attacked the player being attacked
+     * @param table the game table
+     * @param output an ArrayNode to record the results of the attack
+     */
+    public static int useAttackHero(final Coordinates cardAttacker, final Player attacker,
+                                    final Player attacked, final ArrayList<Minion>[] table,
+                                    final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         boolean existsTank = false;
-        for(Minion minion : table[attacked.getFront()]){
+        for (Minion minion : table[attacked.getFront()]) {
             if (minion.isTank()) {
                 existsTank = true;
                 break;
             }
         }
-        boolean hasTank = false;
 
         int winner = 0;
 
@@ -358,8 +449,16 @@ public class Actions {
         return winner;
     }
 
-    public static void useHeroAbility(int affectedRow, Player attacker, Player attacked,
-                                      ArrayList<Minion>[] table, ArrayNode output) {
+    /**
+     * @param affectedRow the coordinate of the affected row
+     * @param attacker the player attacker
+     * @param attacked the player being attacked
+     * @param table the game table
+     * @param output an ArrayNode to record the results of the attack
+     */
+    public static void useHeroAbility(final int affectedRow, final Player attacker,
+                                      final Player attacked, final ArrayList<Minion>[] table,
+                                      final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
 
         if (attacker.getMana() < attacker.getHero().getMana()) {
@@ -393,19 +492,30 @@ public class Actions {
         }
     }
 
-    public static void getPlayerOneWins(int playerOneWins, final ArrayNode output) {
+    /**
+     * @param playerOneWins the number of wins for player one
+     * @param output an ArrayNode to store the results
+     */
+    public static void getPlayerOneWins(final int playerOneWins, final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "getPlayerOneWins");
         node.put("output", playerOneWins);
         output.addPOJO(node);
     }
-
-    public static void getPlayerTwoWins(int playerTwoWins, final ArrayNode output) {
+    /**
+     * @param playerTwoWins the number of wins for player two
+     * @param output an ArrayNode to store the results
+     */
+    public static void getPlayerTwoWins(final int playerTwoWins, final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "getPlayerTwoWins");
         node.put("output", playerTwoWins);
         output.addPOJO(node);
     }
+    /**
+     * @param totalGamesPlayed the number of games
+     * @param output an ArrayNode to store the results
+     */
     public static void getTotalGamesPlayed(final int totalGamesPlayed, final ArrayNode output) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         node.put("command", "getTotalGamesPlayed");

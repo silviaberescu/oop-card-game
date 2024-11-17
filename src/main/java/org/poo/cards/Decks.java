@@ -10,22 +10,6 @@ public class Decks {
     private int nrDecks;
     private ArrayList<ArrayList<Minion>> cardsInDecks;
 
-    public final int getNrCardsInDeck() {
-        return nrCardsInDeck;
-    }
-
-    public final void setNrCardsInDeck(final int nrCardsInDeck) {
-        this.nrCardsInDeck = nrCardsInDeck;
-    }
-
-    public final int getNrDecks() {
-        return nrDecks;
-    }
-
-    public final void setNrDecks(final int nrDecks) {
-        this.nrDecks = nrDecks;
-    }
-
     public final ArrayList<ArrayList<Minion>> getCardsInDecks() {
         return cardsInDecks;
     }
@@ -58,7 +42,7 @@ public class Decks {
                 } else if (currentCard.getName().compareTo("Disciple") == 0) {
                     Disciple disciple = new Disciple(currentCard);
                     currentDeck.add(disciple);
-                } else if(currentCard.getName().compareTo("The Cursed One") == 0) {
+                } else if (currentCard.getName().compareTo("The Cursed One") == 0) {
                     TheCursedOne theCursedOne = new TheCursedOne(currentCard);
                     currentDeck.add(theCursedOne);
                 } else {

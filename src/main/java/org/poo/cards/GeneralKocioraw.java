@@ -16,7 +16,4 @@ public final class GeneralKocioraw extends Hero {
         super(card);
     }
 
-    public GeneralKocioraw(final GeneralKocioraw card) {
-        super(card);
-    }
 }

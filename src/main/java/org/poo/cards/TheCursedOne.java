@@ -15,8 +15,4 @@ public final class TheCursedOne extends Minion {
     public TheCursedOne(final CardInput card) {
         super(card);
     }
-
-    public TheCursedOne(final TheCursedOne card) {
-        super(card);
-    }
 }

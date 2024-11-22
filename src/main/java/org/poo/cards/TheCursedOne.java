@@ -9,7 +9,6 @@ public final class TheCursedOne extends Minion {
         int aux2 = minion.getAttackDamage();
         minion.setHealth(aux2);
         minion.setAttackDamage(aux);
-        System.out.println("The cursed one");
     }
 
     public TheCursedOne(final CardInput card) {

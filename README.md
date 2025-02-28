@@ -1,4 +1,4 @@
-#OOP project - Card game
+OOP project - Card game
 
 The implementation is done using two main packages:
 

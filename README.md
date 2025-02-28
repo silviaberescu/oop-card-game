@@ -1,3 +1,5 @@
+OOP project - Card game
+
 The implementation is done using two main packages:
 
 1. cards - which contains the classes that represent all card types:
